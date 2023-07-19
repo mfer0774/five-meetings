@@ -29,7 +29,7 @@ const App = () => {
 
   const [showSketch, setShowSketch] = useState(false);
   const [key, setKey] = useState(0);
-  const [slogan, setSlogan] = useState("This meeting could have been an email");
+  const [slogan, setSlogan] = useState("this meeting could have been an email");
 
   const regenerate = () => {
     setKey(prevKey => prevKey + 1);
@@ -43,7 +43,7 @@ const App = () => {
       <header className="App-header">
         <h1 className="typeText">{slogan}</h1>
         {showSketch && <div className="sketchContainer" key={key}><MySketch /></div>}
-        <button className="ctaButton" onClick={regenerate}>Make it entertaining</button>
+        <button className="ctaButton" onClick={regenerate}>make it entertaining</button>
       </header>
     </div>
   );
