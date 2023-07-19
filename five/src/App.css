@@ -82,5 +82,15 @@
   }
 }
 
+@media only screen and (max-width: 700px) { 
+  .typeText {
+    font-size: 1.3rem;
+  }
+
+  .ctaButton {
+    font-size: 15px;
+  }
+}
+
 
 
