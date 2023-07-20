@@ -30,6 +30,7 @@ contract Five is ERC721, Ownable, ReentrancyGuard {
         hasMinted[msg.sender] = true;
     }
 
+    // in case eth somehow finds its way in here
     function withdraw() public onlyOwner {
         uint balance = address(this).balance;
         payable(msg.sender).transfer(balance);

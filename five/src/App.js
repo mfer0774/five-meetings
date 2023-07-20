@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import MySketch from './Sketch';
+import { FaGithub } from 'react-icons/fa';
+import Thing from './Thing';
 import './App.css';
 
 const App = () => {
@@ -40,11 +41,16 @@ const App = () => {
 
   return (
     <div className="App">
-      <header className="App-header">
+      <header className="container">
         <h1 className="typeText">{slogan}</h1>
-        {showSketch && <div className="sketchContainer" key={key}><MySketch /></div>}
-        <button className="ctaButton" onClick={regenerate}>make it entertaining</button>
+        {showSketch && <div className="sketchContainer" key={key}><Thing /></div>}
+        <button className="ctaButton" onClick={regenerate}>make it interesting</button>
       </header>
+      <footer className="footer">
+        <a href="https://github.com/mfer0774/five-meetings" target="_blank" rel="noopener noreferrer">
+          <FaGithub size={24} />
+        </a>
+      </footer>
     </div>
   );
 }

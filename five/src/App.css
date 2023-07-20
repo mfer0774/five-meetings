@@ -3,7 +3,7 @@
   background: #EBECF0;
 }
 
-.App-header {
+.container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -81,6 +81,18 @@
     background-position: 0% 50%;
   }
 }
+
+.footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.footer a {
+  color: #333;
+}
+
 
 @media only screen and (max-width: 700px) { 
   .typeText {
