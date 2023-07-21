@@ -25,7 +25,13 @@ const App = () => {
     "let's deep dive on this",
     "we need to hit the ground running",
     "it's a win-win situation",
-    "let's push the envelope"
+    "let's push the envelope",
+    "we're going to build this plane while flying",
+    "we need to create a value-add",
+    "let's pivot this",
+    "we need to align our strategies",
+    "this is a bleeding-edge concept",
+    "there seems to be a disconnect here"
   ];
 
   const [showSketch, setShowSketch] = useState(false);

@@ -1,82 +1,104 @@
-import React from 'react';
-import Sketch from 'react-p5';
+import React, { useEffect, useRef, useState } from 'react';
 
 const Thing = () => {
-  let circles = [{ x: 250, y: 250, r: 10, color: null}];
-  let currentCount = 1;
-  const maxCount = 690;
-  
   const palettes = [
-    { bg: '245,245,245', colors: ['216,174,199', '230,205,172', '244,238,174', '176,223,185', '162,198,210'] },
-    { bg: '34,31,32', colors: ['255,51,102', '255,153,51', '221,255,51', '51,255,187', '51,153,255'] },
-    { bg: '8,28,36', colors: ['255,107,107', '255,223,107', '84,255,107', '107,227,255', '141,107,255'] }, 
-    { bg: '15,76,92', colors: ['9,56,62', '219,202,142', '255,153,21', '255,92,51', '191,35,40'] },
-    { bg: '0,43,54', colors: ['255,84,84', '255,172,84', '255,219,84', '212,255,84', '128,255,84'] },
-    { bg: '42,87,141', colors: ['42,87,141', '28,123,153', '46,165,188', '72,205,220', '198,232,250'] },
-    { bg: '254,209,182', colors: ['254,209,182', '229,238,190', '167,223,214', '162,196,254', '204,204,204'] },
-    { bg: '235,236,240', colors: ['181,204,221', '135,192,234', '94,190,228', '78,205,196', '85,210,172'] }
-  ];  
+    { bg: '245,245,245', colors: ['rgb(216,174,199)', 'rgb(230,205,172)', 'rgb(244,238,174)', 'rgb(176,223,185)', 'rgb(162,198,210)'] },
+    { bg: '34,31,32', colors: ['rgb(255,51,102)', 'rgb(255,153,51)', 'rgb(221,255,51)', 'rgb(51,255,187)', 'rgb(51,153,255)'] },
+    { bg: '8,28,36', colors: ['rgb(255,107,107)', 'rgb(255,223,107)', 'rgb(84,255,107)', 'rgb(107,227,255)', 'rgb(141,107,255)'] }, 
+    { bg: '15,76,92', colors: ['rgb(9,56,62)', 'rgb(219,202,142)', 'rgb(255,153,21)', 'rgb(255,92,51)', 'rgb(191,35,40)'] },
+    { bg: '0,43,54', colors: ['rgb(255,84,84)', 'rgb(255,172,84)', 'rgb(255,219,84)', 'rgb(212,255,84)', 'rgb(128,255,84)'] },
+    { bg: '42,87,141', colors: ['rgb(38,79,128)', 'rgb(28,123,153)', 'rgb(46,165,188)', 'rgb(72,205,220)', 'rgb(198,232,250)'] },
+    { bg: '232,197,152', colors: ['rgb(210,80,60)', 'rgb(227,112,93)', 'rgb(91,132,173)', 'rgb(40,67,87)', 'rgb(234,226,94)'] },
+    { bg: '235,236,240', colors: ['rgb(181,204,221)', 'rgb(135,192,234)', 'rgb(94,190,228)', 'rgb(78,205,196)', 'rgb(85,210,172)'] }
+  ];
 
-  const activePalette = palettes[Math.floor(Math.random() * palettes.length)];
-  const colors = activePalette.colors;
+  const [circles, setCircles] = useState([{ x: 250, y: 250, r: 10, color: '#ccc'}]);
+  const [currentCount, setCurrentCount] = useState(1);
+  const [activePalette, setActivePalette] = useState(palettes[0]);
+  const [colors, setColors] = useState();
+  const svgRef = useRef(null);
+  const maxCount = 690;
 
-  const setup = (p5, canvasParentRef) => {
-    p5.createCanvas(500, 500).parent(canvasParentRef);
-    p5.strokeWeight(0.3);
-    const bgColors = activePalette.bg.split(',').map(str => Number(str));
-    p5.background(...bgColors);
-    circles[0] = { 
-      x: p5.width / 2, 
-      y: p5.height / 2, 
+  function estimateSVGSize(svgElement) {
+    const svgString = new XMLSerializer().serializeToString(svgElement);
+    return svgString.length;
+  }
+
+  useEffect(() => {
+    const activePalette = palettes[Math.floor(Math.random() * palettes.length)];
+    const colors = activePalette.colors;
+
+    setActivePalette(activePalette);
+    setColors(colors);
+
+    setCircles([{ 
+      x: 250, 
+      y: 250, 
       r: 10, 
-      color: p5.random(colors)
-    };
-  };
+      colorIndex: Math.floor(Math.random() * colors.length)
+    }]);
+  }, []); 
+  
+  useEffect(() => {
+    function draw() {
+      let newR = Math.random() * 6 + 1;
+      let newX = Math.random() * (500 - newR) + newR;
+      let newY = Math.random() * (500 - newR) + newR;
+      
+      let closestDist = Number.MAX_VALUE;
+      let closestIndex = 0;
+  
+      for (let i = 0; i < currentCount; i++) {
+        let dx = newX - circles[i].x;
+        let dy = newY - circles[i].y;
+        let newDist = Math.sqrt(dx*dx + dy*dy);
+        if (newDist < closestDist) {
+          closestDist = newDist;
+          closestIndex = i;
+        }
+      }      
 
-  const draw = (p5) => {
-    p5.clear();
-    const bgColors = activePalette.bg.split(',').map(str => Number(str));
-    p5.background(...bgColors);
+      let angle = Math.atan2(newY - circles[closestIndex].y, newX - circles[closestIndex].x);
+      
+      let nextX = circles[closestIndex].x + Math.cos(angle) * (circles[closestIndex].r + newR);
+      let nextY = circles[closestIndex].y + Math.sin(angle) * (circles[closestIndex].r + newR);
 
-    let newR = p5.random(1, 7);
-    let newX = p5.random(newR, p5.width - newR);
-    let newY = p5.random(newR, p5.height - newR);
+      const newCircles = [...circles, { x: nextX, y: nextY, r: newR, colorIndex: Math.floor(Math.random() * colors.length) }];
 
-    let closestDist = Number.MAX_VALUE;
-    let closestIndex = 0;
-
-    for (let i = 0; i < currentCount; i++) {
-      let newDist = p5.dist(newX, newY, circles[i].x, circles[i].y);
-      if (newDist < closestDist) {
-        closestDist = newDist;
-        closestIndex = i;
-      }
+      setCircles(newCircles);
+      setCurrentCount(currentCount + 1);
     }
 
-    let angle = p5.atan2(newY - circles[closestIndex].y, newX - circles[closestIndex].x);
-
-    let nextX = circles[closestIndex].x + p5.cos(angle) * (circles[closestIndex].r + newR);
-    let nextY = circles[closestIndex].y + p5.sin(angle) * (circles[closestIndex].r + newR);
-
-    circles.push({ x: nextX, y: nextY, r: newR, color: p5.random(colors) });
-
-    currentCount++;
-
-    for (let i = 0; i < currentCount; i++) {
-      p5.fill(`rgba(${circles[i].color}, 0.8)`);
-      p5.drawingContext.shadowOffsetX = 0;
-      p5.drawingContext.shadowOffsetY = 0;
-      p5.drawingContext.shadowBlur = 10;
-      p5.drawingContext.shadowColor = `rgba(${circles[i].color}, 0.5)`;
-      p5.ellipse(circles[i].x, circles[i].y, circles[i].r * 2, circles[i].r * 2);
+    if (currentCount < maxCount) {
+      const interval = setInterval(draw, 10);
+      return () => clearInterval(interval);
     }
+  }, [circles, currentCount, activePalette, colors]);
 
+  useEffect(() => {
     if (currentCount >= maxCount) {
-      p5.noLoop();
+      const svgSize = estimateSVGSize(svgRef.current);
+      console.log("estimated SVG size in bytes: ", svgSize);
     }
-  };
-
-  return <Sketch setup={setup} draw={draw} />;
+  }, [currentCount]);
+  
+  return (
+    <svg ref={svgRef} width="500" height="500" style={{backgroundColor: `rgb(${activePalette.bg})`}}>
+      <defs>
+        {colors && colors.map((color, index) => (
+          <linearGradient id={`gradient${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style={{stopColor: color, stopOpacity: 1}} />
+            <stop offset="100%" style={{stopColor: color, stopOpacity: 0.6}} />
+          </linearGradient>
+        ))}
+      </defs>
+      {circles.map((circle, index) => (
+        <circle key={index} cx={circle.x} cy={circle.y} r={circle.r} fill={`url(#gradient${circle.colorIndex})`} />
+      ))}
+    </svg>
+  );
 };
 
 export default Thing;
+
+

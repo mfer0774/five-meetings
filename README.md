@@ -6,7 +6,7 @@ how tf am i going to do the animation onchain lmfao looking like it might be eig
 
 img and the quote will need to be captured on the mint button click. each as metadata props. SSTORE? maybe each circle gets a unique id and (x,y) prop? 
 
-meeting three - 
+meeting three - added more jargon. fully abandonded p5 and PIVOTED(lol) to vanillajs and directly creating the svgs. outputs are currently ~71kb. I have no idea what this means for gas cost at the moment, but seems fine...?
 
 meeting four - 
 
